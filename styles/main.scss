@@ -1,2 +1,8 @@
 @import 'utils/variables';
 @import 'base/normalise';
+@import 'base/fonts';
+
+@import 'layout/body';
+@import 'layout/header';
+
+@import 'components/input-search';
