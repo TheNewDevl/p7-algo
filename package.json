@@ -1,0 +1,27 @@
+{
+  "name": "p7-algo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "npx tsc --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TheNewDevl/p7-algo.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TheNewDevl/p7-algo/issues"
+  },
+  "homepage": "https://github.com/TheNewDevl/p7-algo#readme",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.41.0",
+    "@typescript-eslint/parser": "^5.41.0",
+    "eslint": "^8.26.0",
+    "sass": "^1.55.0",
+    "typescript": "^4.8.4"
+  }
+}
