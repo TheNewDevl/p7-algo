@@ -1,0 +1,74 @@
+.recipe {
+  //Recipe card container
+  &__container {
+    width: $card-width;
+    height: 365px;
+    background-color: $dark-grey;
+    position: relative;
+  }
+
+  //Recipe
+  position: absolute;
+  height: 187px;
+  width: 100%;
+  bottom: 0;
+  background-color: $light-grey;
+  padding: 20px;
+
+  //Recipe name and duration
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    //recipe name
+    &__name {
+      font-size: 18px;
+      font-weight: 400;
+    }
+
+    //duration
+    & p {
+      display: flex;
+      gap: 7px;
+      align-items: center;
+      font-size: 18px;
+      font-weight: 700;
+    }
+  }
+
+  //recipe details container
+  &__details {
+    margin-top: 20px;
+    display: flex;
+    font-size: 12px;
+
+    &__col {
+      width: 50%;
+
+      //recipe ingredients
+      &--left {
+        & .ingredient {
+          line-height: 14px;
+
+          & strong {
+            font-weight: 700;
+          }
+        }
+      }
+
+      //recipe steps
+      &--right {
+        display: -webkit-box;
+        font-weight: 400;
+
+        overflow: hidden;
+        text-overflow: ellipsis;
+        -webkit-line-clamp: 6;
+        line-clamp: 6;
+        -webkit-box-orient: vertical;
+        -moz-box-orient: vertical;
+      }
+    }
+  }
+}

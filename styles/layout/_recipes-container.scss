@@ -1,0 +1,10 @@
+//Recipes section container
+.recipes {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  column-gap: $cards-gap;
+  row-gap: clamp(5px, 2vw, 37px);
+  margin-top: 25px;
+}
+

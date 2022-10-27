@@ -1,10 +1,16 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap');
 
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+
 header {
   font-family: 'DM Sans', sans-serif;
 }
 
 body, body > * {
   font-family: 'Lato', sans-serif;
+}
+
+.recipe__content__col--right {
+  font-family: 'Roboto', sans-serif;
 }
