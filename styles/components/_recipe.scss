@@ -1,7 +1,7 @@
 .recipe {
   //Recipe card container
   &__container {
-    width: $card-width;
+    @include cardWidth(3);
     height: 365px;
     background-color: $dark-grey;
     position: relative;

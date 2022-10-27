@@ -1,0 +1,3 @@
+@mixin cardWidth($cols-number: 3) {
+  width: calc((100% - ($cards-gap * ($cols-number - 1))) / $cols-number)
+}
