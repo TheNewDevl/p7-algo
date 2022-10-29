@@ -1,17 +1,17 @@
 /** Return an HTML element, with the given classes and text content */
 export const createEl = (
   tag: string,
-  className?: string[] | string,
-  textContent?: string
+  attributes: { [key: string]: string } = {},
+  text?: string
 ): HTMLElement => {
-  const el = document.createElement(`${tag}`);
+  const el = document.createElement(tag);
 
-  if (className) {
-    typeof className === "string" ? el.classList.add(className) : el.classList.add(...className);
+  for (const [key, value] of Object.entries(attributes)) {
+    el.setAttribute(key, value);
   }
 
-  if (textContent) {
-    el.textContent = textContent;
+  if (text) {
+    el.innerText = text;
   }
 
   return el;
