@@ -1,3 +1,9 @@
 @mixin cardWidth($cols-number: 3) {
   width: calc((100% - ($cards-gap * ($cols-number - 1))) / $cols-number)
 }
+
+@mixin media($screen-type: 768px) {
+  @media screen and (max-width: map-get($screen-sizes, $screen-type)) {
+    @content;
+  }
+}

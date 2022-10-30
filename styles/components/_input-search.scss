@@ -9,6 +9,7 @@ form {
     background: $light-grey;
     padding: 24px;
     position: relative;
+    border-radius: $default-radius;
 
     &::placeholder {
       font-size: 18px;

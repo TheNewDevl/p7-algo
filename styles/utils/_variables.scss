@@ -9,3 +9,12 @@ $logo-color: #D04F4F;
 $max-with: 1440px;
 
 $cards-gap: 3%;
+
+$default-radius: 5px;
+
+$screen-sizes: (
+        mobile: 768px,
+        tablet: 992px,
+        desktop: 1228px,
+        big-size: $max-with
+);

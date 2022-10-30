@@ -2,18 +2,32 @@
   //Recipe card container
   &__container {
     @include cardWidth(3);
-    height: 365px;
+    min-height: 365px;
     background-color: $dark-grey;
-    position: relative;
+    display: flex;
+    flex-direction: column;
+    border-radius: $default-radius;
+
+    @include media(tablet) {
+      @include cardWidth(2)
+    }
+
+    @include media(mobile) {
+      @include cardWidth(1)
+    }
+  }
+
+  &__img {
+    min-height: 178px;
   }
 
   //Recipe
-  position: absolute;
-  height: 187px;
+  min-height: 187px;
   width: 100%;
-  bottom: 0;
   background-color: $light-grey;
   padding: 20px;
+  flex-grow: 1;
+  border-radius: 0 0 $default-radius $default-radius;
 
   //Recipe name and duration
   &__header {
@@ -25,15 +39,23 @@
     &__name {
       font-size: 18px;
       font-weight: 400;
+      max-width: 70%;
+      @include media(desktop) {
+        font-size: 16px;
+      }
     }
 
     //duration
     & p {
       display: flex;
-      gap: 7px;
+      flex-shrink: 0;
+      gap: 5px;
       align-items: center;
       font-size: 18px;
       font-weight: 700;
+      @include media(desktop) {
+        font-size: 16px;
+      }
     }
   }
 
@@ -42,6 +64,7 @@
     margin-top: 20px;
     display: flex;
     font-size: 12px;
+    gap: 5px;
 
     &__col {
       width: 50%;

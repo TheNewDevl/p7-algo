@@ -3,17 +3,17 @@ import { recipes } from "./data/recipes.js";
 import { createEl } from "./utils/domFns.js";
 
 class RecipeArticleDOM {
-  private recipes: Recipe[];
+  private unfilteredRecipes: Recipe[];
   private recipesContainer: HTMLElement;
 
   constructor(recipes: Recipe[], container: HTMLElement) {
-    this.recipes = recipes;
+    this.unfilteredRecipes = recipes;
     this.recipesContainer = container;
 
     this.init();
   }
 
-  private buildDOM(recipe: Recipe): HTMLElement {
+  private buildRecipeDOM(recipe: Recipe): HTMLElement {
     const article = createEl("article", { class: "recipe__container" });
     const recipeDivInfo = createEl("div", { class: "recipe" });
     const recipeDetails = createEl("div", { class: "recipe__details" });
@@ -50,7 +50,10 @@ class RecipeArticleDOM {
       ingredientsList.append(ingredientItem);
     });
 
-    article.append(recipeDivInfo);
+    //Recipe img container
+    const imgContainer = createEl("div", { class: "recipe__img" });
+
+    article.append(imgContainer, recipeDivInfo);
     recipeDivInfo.append(header, recipeDetails);
     recipeDetails.append(ingredientsList, steps);
 
@@ -58,10 +61,8 @@ class RecipeArticleDOM {
   }
 
   init() {
-    this.recipes.map((r) => this.recipesContainer.appendChild(this.buildDOM(r)));
+    this.unfilteredRecipes.map((r) => this.recipesContainer.appendChild(this.buildRecipeDOM(r)));
   }
 }
 
 const app = new RecipeArticleDOM(recipes, document.querySelector(".recipes"));
-
-app.init();
