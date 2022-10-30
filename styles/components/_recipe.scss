@@ -15,6 +15,10 @@
     @include media(mobile) {
       @include cardWidth(1)
     }
+
+    &[data-display='hidden'] {
+      display: none;
+    }
   }
 
   &__img {

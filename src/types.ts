@@ -14,3 +14,8 @@ export interface Recipe {
   appliance: string;
   utensils: string[];
 }
+
+export interface RecipeInstance {
+  obj: Recipe;
+  DOM: HTMLElement;
+}
