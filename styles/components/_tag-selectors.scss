@@ -1,0 +1,111 @@
+.tags details {
+  height: 70px;
+  position: relative;
+  border-radius: $default-radius;
+  @include media(mobile) {
+    width: 100%;
+    height: 50px;
+  }
+  //set different background color for every tag selector
+  @each $type, $color in $tagColors {
+    &.#{$type} {
+      background-color: $color;
+
+      & input, & ul {
+        background-color: $color;
+      }
+    }
+  }
+
+  //CLOSED details styles
+  & summary {
+    width: 170px;
+    @include flex($justify: space-between);
+    height: 100%;
+    padding: 20px;
+    position: relative;
+    @include media(tablet) {
+      width: 100%;
+    }
+    @include media(mobile) {
+      padding: 10px;
+    }
+
+    & > *, & > * > * {
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    & label {
+      position: absolute;
+    }
+
+    & input {
+      height: 40px;
+      border: none;
+      padding-left: 5px;
+      width: 90%;
+      opacity: 0;
+      @include media(mobile) {
+        height: unset;
+      }
+
+      &::placeholder {
+        opacity: 0.5;
+      }
+    }
+  }
+
+  //OPENED details styles
+  &[open] {
+    z-index: 2;
+    border-radius: $default-radius $default-radius 0 0;
+
+    & summary {
+      width: 100%;
+    }
+
+    & label {
+      opacity: 0;
+    }
+
+    & input {
+      opacity: 1
+    }
+
+    & img {
+      transform: rotate(180deg);
+    }
+
+    & ul {
+      @include flex($wrap: true, $justify: space-between);
+      max-width: 680px;
+      max-height: 357px;
+      row-gap: 10px;
+      padding: 20px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      @include media(mobile) {
+        padding: 10px;
+
+      }
+
+      & li {
+        color: #fff;
+        width: 200px;
+        font-size: 18px;
+        font-weight: 400;
+        cursor: pointer;
+        transition: transform 100ms ease-in-out;
+        text-transform: capitalize;
+
+        &:hover, &:focus {
+          transform: scale(1.2) translateX(20px);
+        }
+      }
+    }
+  }
+}
+
+

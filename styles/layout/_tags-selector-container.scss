@@ -1,0 +1,15 @@
+.tags {
+  margin-top: 20px;
+  display: flex;
+  max-width: 100%;
+  gap: 20px;
+
+  @include media(tablet) {
+    justify-content: space-between;
+  }
+  @include media(mobile) {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+}
+

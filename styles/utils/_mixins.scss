@@ -7,3 +7,16 @@
     @content;
   }
 }
+
+@mixin flex($align: center, $justify: inherit, $column: false, $wrap: false) {
+  display: flex;
+  align-items: $align;
+  justify-content: $justify;
+  @if ($column) {
+    flex-direction: column;
+  }
+  @if ($wrap) {
+    flex-wrap: wrap;
+  }
+
+}

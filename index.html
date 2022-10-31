@@ -18,15 +18,95 @@
 </header>
 
 <main>
+  <!-- Main search input -->
 
-  <section>
-    <form action="">
-      <input aria-label="Search area" type="search" name="search-recipe" id="search"
-             placeholder="Rechercher une recette">
-      <img src="assets/search.svg" alt="search icon">
-    </form>
+  <form>
+    <input aria-label="Search area" type="search" name="search-recipe" id="search"
+           placeholder="Rechercher une recette">
+    <img src="assets/search.svg" alt="search icon">
+  </form>
+
+  <!-- Tags container -->
+  <aside class="selected-tags"></aside>
+
+  <!-- Tags selectors -->
+  <section class="tags">
+
+    <!-- Ingredient tags -->
+    <details class="ingredients">
+      <summary class="tags__summary tags__summary--ingredients">
+        <label for="ingredient-search">
+          Ingrédients
+        </label>
+
+        <input class="tags__summary__input tags__summary__input--ingredients"
+               id="ingredient-search" type="search" placeholder="Rechercher un ingrédient">
+
+        <img src="./assets/chevron.svg" alt="Chevron"
+             class="tags__summary_icon">
+      </summary>
+
+      <ul class="tags__list tags__list--ingredients">
+        <li>item</li>
+        <li>item</li>
+        <li>item</li>
+        <li>item</li>
+        <li>item</li>
+        <li>item</li>
+        <li>item</li>
+        <li>item</li>
+        <li>item</li>
+        <li>item</li>
+        <li>item</li>
+        <li>item</li>
+        <li>item</li>
+        <li>item</li>
+        <li>item</li>
+        <li>item</li>
+        <li>item</li>
+        <li>item</li>
+      </ul>
+    </details>
+
+    <!-- Appliance tags -->
+    <details class="appliance">
+      <summary class="tags__summary tags__summary--appliance">
+        <label for="appliance-search">
+          Appareils
+        </label>
+
+        <input class="tags__summary__input tags__summary__input--appliance"
+               id="appliance-search" type="search" placeholder="Rechercher un appareil">
+
+        <img src="./assets/chevron.svg" alt="Chevron"
+             class="tags__summary_icon">
+      </summary>
+
+      <ul class="tags__list tags__list--appliance">
+      </ul>
+    </details>
+
+    <!-- Utensils tags -->
+    <details class="utensils">
+      <summary class="tags__summary tags__summary--utensils">
+        <label for="utensils-search">
+          Ustensiles
+        </label>
+
+        <input class="tags__summary__input tags__summary__input--utensils"
+               id="utensils-search" type="search" placeholder="Rechercher un ustensile">
+
+        <img src="./assets/chevron.svg" alt="Chevron"
+             class="tags__summary_icon">
+      </summary>
+
+      <ul class="tags__list tags__list--utensils">
+      </ul>
+    </details>
+
   </section>
 
+  <!-- Recipes container -->
   <section id="recipes" class="recipes">
   </section>
 </main>

@@ -1,7 +1,11 @@
 //colors
-$ing-color: #3282F7;
-$app-color: #68D9A4;
-$ust-color: #ED6454;
+
+$tagColors: (
+        "ingredients": #3282F7,
+        "appliance" :#68D9A4,
+        "utensils": #ED6454
+);
+
 $light-grey: #E7E7E7;
 $dark-grey: #C7BEBE;
 $logo-color: #D04F4F;
