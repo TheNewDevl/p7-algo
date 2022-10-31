@@ -1,0 +1,19 @@
+.selected-tags {
+  & div {
+    height: 37px;
+    color: #fff;
+    border-radius: $default-radius;
+    padding: 20px 10px;
+    gap: 15px;
+    @include flex();
+    @each $type, $color in $tagColors {
+      &[data-type="#{$type}"] {
+        background-color: $color;
+      }
+    }
+  }
+
+  & img {
+    cursor: pointer;
+  }
+}

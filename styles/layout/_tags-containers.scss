@@ -1,5 +1,13 @@
-.tags {
+//selected tags containers
+.selected-tags {
+  @include flex($wrap: true);
   margin-top: 20px;
+  gap: 10px 20px;
+}
+
+//tags selector container
+.tags {
+  margin-top: 10px;
   display: flex;
   max-width: 100%;
   gap: 20px;
