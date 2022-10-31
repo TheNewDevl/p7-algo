@@ -1,4 +1,4 @@
-import { Recipe, RecipeInstance } from "./types.js";
+import { Ingredient, Recipe, RecipeInstance } from "./types.js";
 import { recipes } from "./data/recipes.js";
 import { createEl } from "./utils/domFns.js";
 
@@ -7,6 +7,10 @@ class RecipeArticleDOM {
   private recipesContainer: HTMLElement;
   private filteredRecipes: RecipeInstance[] = [];
   private isFiltered: boolean;
+
+  private utensilsTagList: Recipe["utensils"] = [];
+  private ingredientsTagList: Ingredient["ingredient"][] = [];
+  private applianceTagList: Recipe["appliance"][] = [];
 
   minLengthInput: number;
 
@@ -108,6 +112,30 @@ class RecipeArticleDOM {
     this.isFiltered = true;
   }
 
+  /**
+   * Set the available tags, from this.filteredRecipes or unfilteredRecipes depending on isFiltered boolean
+   */
+  setAvailableTags() {
+    this[this.isFiltered ? "filteredRecipes" : "unfilteredRecipes"].map((r) => {
+      //appliance
+      if (!this.applianceTagList.includes(r.obj.appliance)) {
+        this.applianceTagList.push(r.obj.appliance);
+      }
+      //utensils
+      r.obj.utensils.map((u) => {
+        if (!this.utensilsTagList.includes(u.toLowerCase())) {
+          this.utensilsTagList.push(u.toLowerCase());
+        }
+      });
+      //ingredients
+      r.obj.ingredients.forEach((i) => {
+        if (!this.ingredientsTagList.includes(i.ingredient.toLowerCase())) {
+          this.ingredientsTagList.push(i.ingredient.toLowerCase());
+        }
+      });
+    });
+  }
+
   init() {
     recipes.map((recipe) => {
       const recipeDOM = this.buildRecipeDOM(recipe);
@@ -118,6 +146,7 @@ class RecipeArticleDOM {
 
       this.recipesContainer.append(recipeDOM);
     });
+    this.setAvailableTags();
   }
 }
 
