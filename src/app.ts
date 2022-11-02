@@ -1,6 +1,9 @@
-import { Ingredient, Recipe, RecipeInstance } from "./types.js";
+import { Recipe, RecipeInstance } from "./types.js";
 import { recipes } from "./data/recipes.js";
-import { createEl } from "./utils/domFns.js";
+import { cleanString, createEl } from "./utils/domFns.js";
+import { TagSelector } from "./TagSelectors.js";
+
+const tagSelectors = document.querySelectorAll("details");
 
 class RecipeArticleDOM {
   private unfilteredRecipes: RecipeInstance[] = [];
@@ -8,9 +11,9 @@ class RecipeArticleDOM {
   private filteredRecipes: RecipeInstance[] = [];
   private isFiltered: boolean;
 
-  private utensilsTagList: Recipe["utensils"] = [];
-  private ingredientsTagList: Ingredient["ingredient"][] = [];
-  private applianceTagList: Recipe["appliance"][] = [];
+  private utensilsTagList = [];
+  private ingredientsTagList = [];
+  private applianceTagList = [];
 
   minLengthInput: number;
 
@@ -81,7 +84,7 @@ class RecipeArticleDOM {
 
   filterRecipes(currentTarget: HTMLInputElement) {
     //Remove spaces
-    const inputValue: string = currentTarget.value.trim().toLowerCase();
+    const inputValue: string = cleanString(currentTarget.value);
     //true if input length > minLengthInput
     const isValidInput: boolean = inputValue.length >= this.minLengthInput;
 
@@ -110,33 +113,150 @@ class RecipeArticleDOM {
     this.filteredRecipes = this.unfilteredRecipes.filter((recipe) => filterHandler(recipe));
 
     this.isFiltered = true;
+
+    this.handleAvailableTags();
+  }
+
+  tagsFilter(e: MouseEvent) {
+    const liTarget = e.currentTarget as HTMLLIElement;
+
+    const value: string = liTarget.dataset.tagvalue;
+    const tagType: string = liTarget.dataset.tagtype;
+
+    //create an insensitive regex to test values
+    const reg = new RegExp(value, "i");
+
+    //handle filter depending on tag type
+    const filterHandler = (recipe: RecipeInstance) => {
+      let isFounded: boolean = false;
+
+      if (tagType === "appliance") {
+        isFounded = reg.test(recipe.obj.appliance);
+      } else if (tagType === "utensils") {
+        for (const utensil of recipe.obj.utensils) {
+          if (reg.test(utensil)) {
+            isFounded = true;
+            isFounded && console.log("OK");
+            break;
+          }
+          for (const ingredient of recipe.obj.ingredients) {
+            if (reg.test(ingredient.unit)) {
+              isFounded = true;
+              break;
+            }
+          }
+        }
+      } else if (tagType === "ingredients") {
+        for (const ingredient of recipe.obj.ingredients) {
+          if (reg.test(ingredient.ingredient)) {
+            isFounded = true;
+            break;
+          }
+        }
+      }
+      recipe.DOM.dataset.display = isFounded ? "shown" : "hidden";
+
+      return isFounded;
+    };
+
+    this.filteredRecipes = this[this.isFiltered ? "filteredRecipes" : "unfilteredRecipes"].filter(
+      (recipe) => filterHandler(recipe)
+    );
+
+    this.isFiltered = true;
+    this.handleAvailableTags();
   }
 
   /**
    * Set the available tags, from this.filteredRecipes or unfilteredRecipes depending on isFiltered boolean
    */
-  setAvailableTags() {
+  handleAvailableTags() {
+    const applianceTagContainer = document.querySelector(".tags__list--appliance");
+    const ingredientTagContainer = document.querySelector(".tags__list--ingredients");
+    const utensilsTagContainer = document.querySelector(".tags__list--utensils");
+
+    applianceTagContainer.innerHTML = "";
+    ingredientTagContainer.innerHTML = "";
+    utensilsTagContainer.innerHTML = "";
+
+    this.applianceTagList = [];
+    this.ingredientsTagList = [];
+    this.utensilsTagList = [];
+    //Retrieve available tags
     this[this.isFiltered ? "filteredRecipes" : "unfilteredRecipes"].map((r) => {
       //appliance
       if (!this.applianceTagList.includes(r.obj.appliance)) {
         this.applianceTagList.push(r.obj.appliance);
+
+        /*   this.applianceTagList.map((i) => {
+             /!*  const tagLi = createEl(
+                 "li",
+                 { "data-tagType": "appliance", "data-display": "shown", "data-tagValue": i },
+                 i
+               );
+               tagLi.addEventListener("click", this.tagsFilter.bind(this));*!/
+             /!*this.applianceTagList.push({
+               value: r.obj.appliance,
+               DOM: tagLi,
+             });*!/
+             //  applianceTagContainer.append(tagLi);
+           });*/
       }
       //utensils
       r.obj.utensils.map((u) => {
-        if (!this.utensilsTagList.includes(u.toLowerCase())) {
-          this.utensilsTagList.push(u.toLowerCase());
+        if (!this.utensilsTagList.includes(cleanString(u))) {
+          this.utensilsTagList.push(cleanString(u));
         }
       });
       //ingredients
       r.obj.ingredients.forEach((i) => {
-        if (!this.ingredientsTagList.includes(i.ingredient.toLowerCase())) {
-          this.ingredientsTagList.push(i.ingredient.toLowerCase());
+        if (!this.ingredientsTagList.includes(cleanString(i.ingredient))) {
+          this.ingredientsTagList.push(cleanString(i.ingredient));
         }
       });
+    });
+
+    //Display available tags
+    //const ingredientTagContainer = document.querySelector(".tags__list--ingredients");
+
+    this.ingredientsTagList.map((i) => {
+      const tagLi = createEl(
+        "li",
+        { "data-tagType": "ingredients", "data-display": "shown", "data-tagValue": i },
+        i
+      );
+      tagLi.addEventListener("click", this.tagsFilter.bind(this));
+
+      ingredientTagContainer.append(tagLi);
+    });
+
+    //const applianceTagContainer = document.querySelector(".tags__list--appliance");
+    this.applianceTagList.map((i) => {
+      const tagLi = createEl(
+        "li",
+        { "data-tagType": "appliance", "data-display": "shown", "data-tagValue": i },
+        i
+      );
+      tagLi.addEventListener("click", this.tagsFilter.bind(this));
+
+      applianceTagContainer.append(tagLi);
+    });
+
+    //const utensilsTagContainer = document.querySelector(".tags__list--utensils");
+    this.utensilsTagList.map((i) => {
+      const tagLi = createEl(
+        "li",
+        { "data-tagType": "utensils", "data-display": "shown", "data-tagValue": i },
+        i
+      );
+      tagLi.addEventListener("click", this.tagsFilter.bind(this));
+      utensilsTagContainer.append(tagLi);
     });
   }
 
   init() {
+    tagSelectors.forEach((tagSelector) => new TagSelector(tagSelector));
+
     recipes.map((recipe) => {
       const recipeDOM = this.buildRecipeDOM(recipe);
       this.unfilteredRecipes.push({
