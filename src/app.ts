@@ -50,17 +50,20 @@ class App {
     const ingredientTagSelector = new TagSelector(
       TagsEnum.ing,
       tagSelectors.find((t) => t.className === "ingredients"),
-      this.search
+      this.search,
+      selectedTagsBuilder
     );
     const applianceTagSelector = new TagSelector(
       TagsEnum.app,
       tagSelectors.find((t) => t.className === "appliance"),
-      this.search
+      this.search,
+      selectedTagsBuilder
     );
     const utensilsTagSelector = new TagSelector(
       TagsEnum.ut,
       tagSelectors.find((t) => t.className === "utensils"),
-      this.search
+      this.search,
+      selectedTagsBuilder
     );
 
     // catch filter custom event to update available tags

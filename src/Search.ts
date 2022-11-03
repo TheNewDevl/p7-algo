@@ -10,6 +10,12 @@ export class Search {
   private isMainFiltered: boolean;
   private isTagFiltered: boolean;
 
+  selectedTags = {
+    ingredients: [],
+    appliance: [],
+    utensils: [],
+  };
+
   ingredients = [];
   appliance = [];
   utensils = [];
@@ -34,10 +40,16 @@ export class Search {
 
     //handles cases where the length of the input is not valid
     if (this.isMainFiltered && !isValidInput) {
-      this._displayAllRecipes();
-      this.isMainFiltered = false;
-      this._handleAvailableTags();
-      this._dispatchEvent();
+      if (this.isTagFiltered) {
+        this.isMainFiltered = false;
+        this.isTagFiltered = false;
+        this.runTagsSearch();
+      } else {
+        this._displayAllRecipes();
+        this.isMainFiltered = false;
+        this._handleAvailableTags();
+        this._dispatchFilterEvent();
+      }
       return;
     } else if (!isValidInput) return;
 
@@ -56,20 +68,26 @@ export class Search {
       return isFounded;
     };
 
-    this.filteredRecipes = this.unfilteredRecipes.filter((recipe) => filterHandler(recipe));
+    this.filteredRecipes = this[
+      this.isTagFiltered ? "filteredRecipes" : "unfilteredRecipes"
+    ].filter((recipe) => filterHandler(recipe));
 
     this.isMainFiltered = true;
 
     this._handleAvailableTags();
-    this._dispatchEvent();
+    this._dispatchFilterEvent();
   }
 
-  searchByTag(e: MouseEvent) {
-    const liTarget = e.currentTarget as HTMLLIElement;
-    console.log(this);
+  addTag(target: HTMLLIElement) {
+    const tagType: string = target.dataset.tagtype;
+    this.selectedTags[tagType].push(target);
+    const event = new CustomEvent("addTag");
+    dispatchEvent(event);
+  }
 
-    const value: string = liTarget.dataset.tagvalue;
-    const tagType: string = liTarget.dataset.tagtype;
+  private _searchByTag(target: HTMLInputElement) {
+    const value: string = target.dataset.tagvalue;
+    const tagType: string = target.dataset.tagtype;
 
     //create an insensitive regex to test values
     const reg = new RegExp(value, "i");
@@ -111,7 +129,7 @@ export class Search {
     this.isTagFiltered = true;
 
     this._handleAvailableTags();
-    this._dispatchEvent();
+    this._dispatchFilterEvent();
   }
 
   /** While user type text, filter the list items using the givent value*/
@@ -151,12 +169,19 @@ export class Search {
     );
   }
 
-  private _dispatchEvent() {
+  private runTagsSearch() {
+    for (const [entry] of Object.entries(this.selectedTags)) {
+      this.selectedTags[entry].map((li) => this._searchByTag(li));
+    }
+  }
+
+  private _dispatchFilterEvent() {
     const event = new CustomEvent("filter", { detail: this.filteredRecipes });
     window.dispatchEvent(event);
   }
 
   private _init() {
     this._handleAvailableTags();
+    window.addEventListener("addTag", this.runTagsSearch.bind(this));
   }
 }

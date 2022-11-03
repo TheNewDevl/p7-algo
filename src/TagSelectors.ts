@@ -62,8 +62,8 @@ export class TagSelector {
     this.searchInstance[this._type].map((i) => {
       const li = this.domBuilder.buildTagSelectorLiItem(this._type, i);
       this._LIElements.push(li);
-      li.addEventListener("click", (e) => {
-        this.searchInstance.searchByTag(e);
+      li.addEventListener("click", ({ currentTarget }) => {
+        this.createSelectedTag(currentTarget as HTMLLIElement);
       });
     });
   }
