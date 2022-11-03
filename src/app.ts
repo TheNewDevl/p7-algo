@@ -50,30 +50,24 @@ class App {
     const ingredientTagSelector = new TagSelector(
       TagsEnum.ing,
       tagSelectors.find((t) => t.className === "ingredients"),
-      // this.search.searchByTag.bind(this.search),
-      this.search,
-      this.search.ingredientsList
+      this.search
     );
     const applianceTagSelector = new TagSelector(
       TagsEnum.app,
       tagSelectors.find((t) => t.className === "appliance"),
-      // this.search.searchByTag.bind(this.search),
-      this.search,
-      this.search.applianceList
+      this.search
     );
     const utensilsTagSelector = new TagSelector(
       TagsEnum.ut,
       tagSelectors.find((t) => t.className === "utensils"),
-      // this.search.searchByTag.bind(this.search),
-      this.search,
-      this.search.utensilsList
+      this.search
     );
 
     // catch filter custom event to update available tags
     window.addEventListener("filter", () => {
-      ingredientTagSelector.updateItems(this.search.ingredientsList);
-      applianceTagSelector.updateItems(this.search.applianceList);
-      utensilsTagSelector.updateItems(this.search.utensilsList);
+      ingredientTagSelector.updateAvailableTags();
+      applianceTagSelector.updateAvailableTags();
+      utensilsTagSelector.updateAvailableTags();
     });
   }
 

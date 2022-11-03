@@ -7,46 +7,40 @@ export class TagSelector {
   private _summaryElement: HTMLElement;
   private _closeBtn: HTMLImageElement;
   private _input: HTMLInputElement;
+  private _LIElements: HTMLElement[] = [];
 
   private readonly _UL: HTMLUListElement;
   private readonly _type: TagsEnum;
-  //private readonly _eventCb: (e: MouseEvent) => void;
   private readonly searchInstance: Search;
   private domBuilder: DOMBuilder;
 
-  private items: string[];
-
-  constructor(
-    type: TagsEnum,
-    _tagSelector: HTMLDetailsElement,
-    // cb: (e: MouseEvent) => void,
-    searchInstance,
-    items: string[]
-  ) {
+  constructor(type: TagsEnum, _tagSelector: HTMLDetailsElement, searchInstance) {
     this._detailElement = _tagSelector;
     this._summaryElement = _tagSelector.querySelector("summary");
     this._closeBtn = _tagSelector.querySelector("img");
     this._input = _tagSelector.querySelector("input");
 
     this._UL = this._detailElement.querySelector("ul");
-    // this._eventCb = cb;
     this.searchInstance = searchInstance;
     this._type = type;
     this.domBuilder = new DOMBuilder(this._UL);
-    this.items = items;
     this._init();
   }
 
-  updateItems(items: string[]) {
-    this.items = items;
-    this._displayAvailableTags();
+  private _filterTags() {
+    this._input.addEventListener("input", (e: InputEvent) => {
+      this.searchInstance.filterTagList(e, this._LIElements);
+    });
   }
 
-  private _displayAvailableTags() {
+  updateAvailableTags() {
     this._UL.innerHTML = "";
-    this.items.map((i) => {
+    this.searchInstance[this._type].map((i) => {
       const li = this.domBuilder.buildTagSelectorLiItem(this._type, i);
-      li.addEventListener("click", this.searchInstance.searchByTag);
+      this._LIElements.push(li);
+      li.addEventListener("click", (e) => {
+        this.searchInstance.searchByTag(e);
+      });
     });
   }
 
@@ -75,7 +69,8 @@ export class TagSelector {
       }
       this._closeTagSelectors.bind(this);
     });
-    this._displayAvailableTags();
-    this._filterListItems();
+    this.updateAvailableTags();
+
+    this._filterTags();
   }
 }

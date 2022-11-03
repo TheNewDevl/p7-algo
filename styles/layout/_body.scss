@@ -14,3 +14,7 @@ body {
 * {
   box-sizing: border-box;
 }
+
+[data-display='hidden'] {
+  display: none;
+}

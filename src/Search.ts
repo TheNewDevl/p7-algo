@@ -10,9 +10,9 @@ export class Search {
   private isMainFiltered: boolean;
   private isTagFiltered: boolean;
 
-  utensilsList = [];
-  ingredientsList = [];
-  applianceList = [];
+  ingredients = [];
+  appliance = [];
+  utensils = [];
 
   constructor(unfilteredRecipes: RecipeInstance[], minLengthInput: number) {
     this.unfilteredRecipes = unfilteredRecipes;
@@ -66,6 +66,7 @@ export class Search {
 
   searchByTag(e: MouseEvent) {
     const liTarget = e.currentTarget as HTMLLIElement;
+    console.log(this);
 
     const value: string = liTarget.dataset.tagvalue;
     const tagType: string = liTarget.dataset.tagtype;
@@ -113,28 +114,37 @@ export class Search {
     this._dispatchEvent();
   }
 
+  /** While user type text, filter the list items using the givent value*/
+  filterTagList(e: InputEvent, items: HTMLElement[]): void {
+    const target = e.currentTarget as HTMLInputElement;
+    const reg: RegExp = new RegExp(target.value, "i");
+    items.map((li) => {
+      li.dataset.display = reg.test(li.dataset.tagvalue) ? "shown" : "hidden";
+    });
+  }
+
   /** Retrieve available tags from available recipes*/
   private _handleAvailableTags() {
-    this.utensilsList = [];
-    this.ingredientsList = [];
-    this.applianceList = [];
+    this.ingredients = [];
+    this.appliance = [];
+    this.utensils = [];
 
     this[this.isTagFiltered || this.isMainFiltered ? "filteredRecipes" : "unfilteredRecipes"].map(
       (r) => {
         //appliance
-        if (!this.applianceList.includes(r.obj.appliance)) {
-          this.applianceList.push(r.obj.appliance);
+        if (!this.appliance.includes(r.obj.appliance)) {
+          this.appliance.push(r.obj.appliance);
         }
         //utensils
         r.obj.utensils.map((u) => {
-          if (!this.utensilsList.includes(cleanString(u))) {
-            this.utensilsList.push(cleanString(u));
+          if (!this.utensils.includes(cleanString(u))) {
+            this.utensils.push(cleanString(u));
           }
         });
         //ingredients
         r.obj.ingredients.forEach((i) => {
-          if (!this.ingredientsList.includes(cleanString(i.ingredient))) {
-            this.ingredientsList.push(cleanString(i.ingredient));
+          if (!this.ingredients.includes(cleanString(i.ingredient))) {
+            this.ingredients.push(cleanString(i.ingredient));
           }
         });
       }
