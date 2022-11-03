@@ -13,8 +13,14 @@ export class TagSelector {
   private readonly _type: TagsEnum;
   private readonly searchInstance: Search;
   private domBuilder: DOMBuilder;
+  private selectedTagsBuilder: DOMBuilder;
 
-  constructor(type: TagsEnum, _tagSelector: HTMLDetailsElement, searchInstance) {
+  constructor(
+    type: TagsEnum,
+    _tagSelector: HTMLDetailsElement,
+    searchInstance,
+    selectedTagsBuilder: DOMBuilder
+  ) {
     this._detailElement = _tagSelector;
     this._summaryElement = _tagSelector.querySelector("summary");
     this._closeBtn = _tagSelector.querySelector("img");
@@ -24,6 +30,7 @@ export class TagSelector {
     this.searchInstance = searchInstance;
     this._type = type;
     this.domBuilder = new DOMBuilder(this._UL);
+    this.selectedTagsBuilder = selectedTagsBuilder;
     this._init();
   }
 
@@ -31,6 +38,23 @@ export class TagSelector {
     this._input.addEventListener("input", (e: InputEvent) => {
       this.searchInstance.filterTagList(e, this._LIElements);
     });
+  }
+
+  removeSelectedTag() {}
+
+  createSelectedTag(target: HTMLLIElement) {
+    const value: string = target.dataset.tagvalue;
+    const type: string = target.dataset.tagtype;
+
+    const selectedTagDOM = this.selectedTagsBuilder.buildSelectedTagDOM(type, value);
+    selectedTagDOM.querySelector("img").addEventListener("click", () => {
+      this.removeSelectedTag();
+      selectedTagDOM.remove();
+    });
+
+    this.searchInstance.addTag(target);
+
+    return selectedTagDOM;
   }
 
   updateAvailableTags() {
