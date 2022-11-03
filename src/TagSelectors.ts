@@ -48,7 +48,7 @@ export class TagSelector {
 
     const selectedTagDOM = this.selectedTagsBuilder.buildSelectedTagDOM(type, value);
     selectedTagDOM.querySelector("img").addEventListener("click", () => {
-      this.removeSelectedTag();
+      this.searchInstance.removeTag(selectedTagDOM);
       selectedTagDOM.remove();
     });
 

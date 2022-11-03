@@ -10,6 +10,8 @@ export class Search {
   private isMainFiltered: boolean;
   private isTagFiltered: boolean;
 
+  private mainSearchValue: HTMLInputElement | null;
+
   selectedTags = {
     ingredients: [],
     appliance: [],
@@ -45,6 +47,7 @@ export class Search {
         this.isTagFiltered = false;
         this.runTagsSearch();
       } else {
+        this.mainSearchValue = null;
         this._displayAllRecipes();
         this.isMainFiltered = false;
         this._handleAvailableTags();
@@ -53,6 +56,7 @@ export class Search {
       return;
     } else if (!isValidInput) return;
 
+    this.mainSearchValue = currentTarget;
     //create an insensitive regex to test values
     const reg = new RegExp(inputValue, "i");
 
@@ -76,6 +80,29 @@ export class Search {
 
     this._handleAvailableTags();
     this._dispatchFilterEvent();
+  }
+
+  removeTag(el: HTMLElement) {
+    const { type, value } = el.dataset;
+    this.selectedTags[type] = this.selectedTags[type].filter((li) => li.dataset.tagvalue !== value);
+    const event = new CustomEvent("addTag");
+    this.isTagFiltered = false;
+
+    if (
+      this.selectedTags.appliance.length === 0 &&
+      this.selectedTags.ingredients.length === 0 &&
+      this.selectedTags.utensils.length === 0
+    ) {
+      if (!this.isMainFiltered) {
+        this._displayAllRecipes();
+        this._handleAvailableTags();
+        this._dispatchFilterEvent();
+      } else {
+        this.mainSearch(this.mainSearchValue);
+      }
+    }
+
+    dispatchEvent(event);
   }
 
   addTag(target: HTMLLIElement) {
