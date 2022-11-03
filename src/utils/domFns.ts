@@ -16,3 +16,12 @@ export const createEl = (
 
   return el;
 };
+
+/**
+ * Return a clean string to make search easier
+ * @param {string} string
+ * @return {string}
+ */
+export const cleanString = (string: string) => {
+  return string.toLowerCase().trim();
+};

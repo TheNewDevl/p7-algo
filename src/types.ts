@@ -19,3 +19,18 @@ export interface RecipeInstance {
   obj: Recipe;
   DOM: HTMLElement;
 }
+
+export interface TagListInstance {
+  obj: Recipe;
+  DOM: HTMLElement;
+}
+
+export interface AttributesParam {
+  [key: string]: string;
+}
+
+export enum TagsEnum {
+  ing = "ingredients",
+  app = "appliance",
+  ut = "utensils",
+}
