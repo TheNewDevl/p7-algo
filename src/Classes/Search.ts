@@ -216,7 +216,9 @@ export class Search {
   }
 
   private _dispatchFilterEvent() {
-    const event = new CustomEvent("filter");
+    const filtered = this._isTagFiltered || this._isMainFiltered;
+    const length = this[filtered ? "_filteredRecipes" : "_unfilteredRecipes"].length;
+    const event = new CustomEvent("filter", { detail: length });
     window.dispatchEvent(event);
   }
 }

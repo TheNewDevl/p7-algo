@@ -25,6 +25,7 @@ class App {
   private selectedTagsBuilder: DOMBuilder;
 
   private readonly _minLengthInput: number;
+  private readonly _error: HTMLElement;
 
   constructor(
     recipes: Recipe[],
@@ -37,6 +38,9 @@ class App {
     this.recipesBuilder = recipesBuilder;
     this.selectedTagsBuilder = selectedTagsContainer;
     this._minLengthInput = minLengthInput;
+    this._error = this.recipesBuilder.buildError(
+      " Aucune recette ne correspond à votre critère... vous pouvez chercher « tarte aux pommes », « poisson », etc."
+    );
     this.init();
   }
 
@@ -87,12 +91,19 @@ class App {
     });
   }
 
+  /** Hide or display 'no recipes" error */
+  handleError(e: CustomEvent) {
+    this._error.style.display = e.detail === 0 ? "block" : "none";
+  }
+
   init() {
     this.initRecipesDisplay();
     //Need to init recipes before search
     this.search = new Search(this._initialRecipes, this._minLengthInput);
     this.initMainSearch();
     this.initTagSelectors();
+
+    window.addEventListener("filter", this.handleError.bind(this));
   }
 }
 

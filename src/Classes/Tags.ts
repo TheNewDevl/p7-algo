@@ -36,7 +36,9 @@ export class Tags {
     this._availableTagBuilder = new DOMBuilder(this._UL);
     this._selectedTagsBuilder = new DOMBuilder(selectedTagContainer);
 
-    this._error = this._availableTagBuilder.buildError("Oups, aucun filtre disponible.");
+    this._error = this._availableTagBuilder.buildError(
+      "Oups, aucun filtre ne correspond à votre saisie."
+    );
 
     this._init();
   }
