@@ -25,6 +25,8 @@
     padding: 20px;
     overflow-y: auto;
     overflow-x: hidden;
+    border-radius: 0 0 $default-radius $default-radius;
+
     @include media(mobile) {
       padding: 10px;
     }
