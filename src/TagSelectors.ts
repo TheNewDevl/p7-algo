@@ -69,9 +69,24 @@ export class TagSelector {
   }
 
   /**close all tag selectors*/
-  private _closeTagSelectors() {
+  private _closeTagSelectors(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    this._input.removeEventListener("click", this.stopPropagation);
+    this._input.removeEventListener("keydown", this.stopPropagation);
+
     this._detailElement.removeAttribute("open");
-    document.removeEventListener("click", this._closeTagSelectors.bind(this));
+
+    document.body.removeEventListener("click", this._closeTagSelectors.bind(this));
+  }
+
+  stopPropagation(e) {
+    e.stopPropagation();
+    if (e.code === "Space") {
+      const target = e.currentTarget as HTMLInputElement;
+      e.preventDefault();
+      target.value = `${target.value} `;
+    }
   }
 
   /**Open the tag selector target*/
@@ -79,20 +94,25 @@ export class TagSelector {
     e.preventDefault();
     e.stopPropagation();
 
+    //prevent close collapse
+    this._input.addEventListener("click", this.stopPropagation);
+    this._input.addEventListener("keydown", this.stopPropagation);
+
     this._detailElement.toggleAttribute("open");
-    document.addEventListener("click", this._closeTagSelectors.bind(this));
+
+    document.body.addEventListener("click", this._closeTagSelectors.bind(this));
   }
 
   private _init() {
     // apply open click event
-    this._summaryElement.addEventListener("click", this._openTagSelector.bind(this));
-    // apply btn click close event
-    this._closeBtn.addEventListener("click", (e) => {
-      if (this._detailElement.getAttribute("open")) {
-        e.stopPropagation();
+    this._detailElement.addEventListener("click", (e) => {
+      if (this._detailElement.attributes.hasOwnProperty("open")) {
+        this._closeTagSelectors(e);
+      } else {
+        this._openTagSelector(e);
       }
-      this._closeTagSelectors.bind(this);
     });
+    // apply btn click close event
     this.updateAvailableTags();
 
     this._filterTags();
