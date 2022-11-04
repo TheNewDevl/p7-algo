@@ -1,25 +1,30 @@
-import { Recipe, RecipeInstance, TagsEnum } from "./types.js";
+import { Recipe, RecipeInstance, TagsEnum } from "./utils/types.js";
 import { recipes } from "./data/recipes.js";
-import { TagSelector } from "./TagSelectors.js";
-import { DOMBuilder } from "./DOMBuilder.js";
-import { Search } from "./Search.js";
+import { Tags } from "./Classes/Tags.js";
+import { DOMBuilder } from "./Classes/DOMBuilder.js";
+import { Search } from "./Classes/Search.js";
 
+//DOM elements
 const tagSelectors: HTMLDetailsElement[] = [...document.querySelectorAll("details")];
 const recipesContainer: HTMLDivElement = document.querySelector(".recipes");
 const mainSearchInput: HTMLInputElement = document.querySelector("form input[type=search]");
 const selectedTagsContainer: HTMLElement = document.querySelector(".selected-tags");
 
+//Dom builder instances
 const recipesBuilder = new DOMBuilder(recipesContainer);
 const selectedTagsBuilder = new DOMBuilder(selectedTagsContainer);
 
+/** Main class */
 class App {
-  private mainSearchInput: HTMLInputElement;
-  private initialRecipes: RecipeInstance[] = [];
+  private _mainSearchInput: HTMLInputElement;
+
+  private _initialRecipes: RecipeInstance[] = [];
 
   private search: Search;
-  recipesBuilder: DOMBuilder;
-  selectedTagsBuilder: DOMBuilder;
-  minLengthInput: number;
+  private recipesBuilder: DOMBuilder;
+  private selectedTagsBuilder: DOMBuilder;
+
+  private readonly _minLengthInput: number;
 
   constructor(
     recipes: Recipe[],
@@ -28,17 +33,17 @@ class App {
     mainSearchInput: HTMLInputElement,
     minLengthInput: number
   ) {
-    this.mainSearchInput = mainSearchInput;
+    this._mainSearchInput = mainSearchInput;
     this.recipesBuilder = recipesBuilder;
     this.selectedTagsBuilder = selectedTagsContainer;
-    this.minLengthInput = minLengthInput;
+    this._minLengthInput = minLengthInput;
     this.init();
   }
 
   /** Generate recipes into the dom and store the DOM and the recipe element in initial array s*/
   initRecipesDisplay(): void {
     recipes.map((recipe) => {
-      this.initialRecipes.push({
+      this._initialRecipes.push({
         obj: recipe,
         DOM: this.recipesBuilder.buildRecipeDOM(recipe),
       });
@@ -47,23 +52,23 @@ class App {
 
   /** Create tag selector instances and set available tags */
   initTagSelectors() {
-    const ingredientTagSelector = new TagSelector(
+    const ingredientTagSelector = new Tags(
       TagsEnum.ing,
-      tagSelectors.find((t) => t.className === "ingredients"),
       this.search,
-      selectedTagsBuilder
+      tagSelectors,
+      selectedTagsContainer
     );
-    const applianceTagSelector = new TagSelector(
+    const applianceTagSelector = new Tags(
       TagsEnum.app,
-      tagSelectors.find((t) => t.className === "appliance"),
       this.search,
-      selectedTagsBuilder
+      tagSelectors,
+      selectedTagsContainer
     );
-    const utensilsTagSelector = new TagSelector(
+    const utensilsTagSelector = new Tags(
       TagsEnum.ut,
-      tagSelectors.find((t) => t.className === "utensils"),
       this.search,
-      selectedTagsBuilder
+      tagSelectors,
+      selectedTagsContainer
     );
 
     // catch filter custom event to update available tags
@@ -76,7 +81,7 @@ class App {
 
   /** set input search event */
   initMainSearch() {
-    this.mainSearchInput.addEventListener("input", (e: InputEvent) => {
+    this._mainSearchInput.addEventListener("input", (e: InputEvent) => {
       e.preventDefault();
       this.search.mainSearch(e.currentTarget as HTMLInputElement);
     });
@@ -84,8 +89,8 @@ class App {
 
   init() {
     this.initRecipesDisplay();
-
-    this.search = new Search(this.initialRecipes, this.minLengthInput);
+    //Need to init recipes before search
+    this.search = new Search(this._initialRecipes, this._minLengthInput);
     this.initMainSearch();
     this.initTagSelectors();
   }

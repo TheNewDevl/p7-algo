@@ -1,8 +1,8 @@
-import { Recipe } from "./types.js";
-import { createEl } from "./utils/domFns.js";
+import { Recipe } from "../utils/types.js";
+import { createEl } from "../utils/domFns.js";
 
 export class DOMBuilder {
-  private _container: HTMLElement;
+  private readonly _container: HTMLElement;
 
   constructor(container: HTMLElement) {
     this._container = container;
@@ -62,6 +62,7 @@ export class DOMBuilder {
     this._container.append(element);
   }
 
+  /**Build and return a selected tag element*/
   buildSelectedTagDOM(type: string, value: string) {
     const tag = createEl("div", { "data-type": type, "data-value": value });
     const btn = createEl("button");
@@ -73,6 +74,7 @@ export class DOMBuilder {
     return tag;
   }
 
+  /**Build and return a list tag element */
   buildTagSelectorLiItem(type: string, value: string) {
     const tagLi = createEl("li", {
       "data-tagType": type,

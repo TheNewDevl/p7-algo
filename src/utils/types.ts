@@ -34,3 +34,9 @@ export enum TagsEnum {
   app = "appliance",
   ut = "utensils",
 }
+
+export interface SelectedTags {
+  ingredients: HTMLElement[];
+  appliance: HTMLElement[];
+  utensils: HTMLElement[];
+}

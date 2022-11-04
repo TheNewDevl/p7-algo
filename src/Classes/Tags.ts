@@ -1,60 +1,64 @@
 import { DOMBuilder } from "./DOMBuilder.js";
-import { TagsEnum } from "./types.js";
+import { TagsEnum } from "../utils/types.js";
 import { Search } from "./Search";
 
-export class TagSelector {
-  private _detailElement: HTMLDetailsElement;
-  private _summaryElement: HTMLElement;
-  private _closeBtn: HTMLImageElement;
-  private _input: HTMLInputElement;
-  private _LIElements: HTMLElement[] = [];
-
+export class Tags {
+  //DOM elements
+  private readonly _detailElement: HTMLDetailsElement;
+  private readonly _summaryElement: HTMLElement;
+  private readonly _input: HTMLInputElement;
+  private readonly _LIElements: HTMLElement[] = [];
   private readonly _UL: HTMLUListElement;
+
+  //Ingredients, appliances or utensils
   private readonly _type: TagsEnum;
-  private readonly searchInstance: Search;
-  private domBuilder: DOMBuilder;
-  private selectedTagsBuilder: DOMBuilder;
+
+  //classes instances
+  private readonly _searchInstance: Search;
+  private readonly _availableTagBuilder: DOMBuilder;
+  private readonly _selectedTagsBuilder: DOMBuilder;
 
   constructor(
     type: TagsEnum,
-    _tagSelector: HTMLDetailsElement,
     searchInstance,
-    selectedTagsBuilder: DOMBuilder
+    tagSelectors: HTMLDetailsElement[],
+    selectedTagContainer: HTMLElement
   ) {
-    this._detailElement = _tagSelector;
-    this._summaryElement = _tagSelector.querySelector("summary");
-    this._closeBtn = _tagSelector.querySelector("img");
-    this._input = _tagSelector.querySelector("input");
-
-    this._UL = this._detailElement.querySelector("ul");
-    this.searchInstance = searchInstance;
     this._type = type;
-    this.domBuilder = new DOMBuilder(this._UL);
-    this.selectedTagsBuilder = selectedTagsBuilder;
+
+    this._detailElement = tagSelectors.find((t) => t.className === this._type);
+    this._summaryElement = this._detailElement.querySelector("summary");
+    this._input = this._detailElement.querySelector("input");
+    this._UL = this._detailElement.querySelector("ul");
+
+    this._searchInstance = searchInstance;
+    this._availableTagBuilder = new DOMBuilder(this._UL);
+    this._selectedTagsBuilder = new DOMBuilder(selectedTagContainer);
+
     this._init();
   }
 
-  private _filterTags() {
-    this._input.addEventListener("input", (e: InputEvent) => {
-      this.searchInstance.filterTagList(e, this._LIElements);
-    });
+  /** Remove selected tag from document and call search removeTag method */
+  private _removeTag(tag: HTMLElement): void {
+    this._searchInstance.removeTag(tag);
+    tag.remove();
   }
 
-  removeSelectedTag() {}
-
-  createSelectedTag(target: HTMLLIElement) {
+  /** Create a selected tag, add a click event that will call the remove tag method */
+  private _createSelectedTag(target: HTMLLIElement) {
     const value: string = target.dataset.tagvalue;
     const type: string = target.dataset.tagtype;
 
-    const selectedTagDOM = this.selectedTagsBuilder.buildSelectedTagDOM(type, value);
-    selectedTagDOM.querySelector("button").addEventListener("click", () => {
-      this.searchInstance.removeTag(selectedTagDOM);
-      selectedTagDOM.remove();
-    });
+    //Create element
+    const selectedTagDOM = this._selectedTagsBuilder.buildSelectedTagDOM(type, value);
 
-    this.searchInstance.addTag(target);
+    //Add close event listener
+    selectedTagDOM
+      .querySelector("button")
+      .addEventListener("click", () => this._removeTag(selectedTagDOM));
 
-    return selectedTagDOM;
+    //Update search instance
+    this._searchInstance.addTag(target);
   }
 
   /** Generate available tag items from the search instance available tags list */
@@ -79,18 +83,18 @@ export class TagSelector {
     });
   }
 
-  /**close all tag selectors*/
+  /** Close tag selector and remove event listeners */
   private _closeTagSelectors(e) {
     e.preventDefault();
     e.stopPropagation();
-    this._input.removeEventListener("click", this._stopPropagation);
-    this._input.removeEventListener("keydown", this._stopPropagation);
-
     this._detailElement.removeAttribute("open");
 
+    this._input.removeEventListener("click", this._stopPropagation);
+    this._input.removeEventListener("keydown", this._stopPropagation);
     document.body.removeEventListener("click", this._closeTagSelectors.bind(this));
   }
 
+  /** Prevent unexpected closing of the details element */
   private _stopPropagation(e) {
     e.stopPropagation();
     if (e.code === "Space") {
@@ -122,7 +126,7 @@ export class TagSelector {
   }
 
   private _init() {
-    // apply open click event
+    // Handle open and close detail element
     this._detailElement.addEventListener("click", (e) => {
       if (this._detailElement.attributes.hasOwnProperty("open")) {
         this._closeTagSelectors(e);
@@ -130,9 +134,17 @@ export class TagSelector {
         this._openTagSelector(e);
       }
     });
-    // apply btn click close event
+
     this.updateAvailableTags();
 
-    this._filterTags();
+    //input filter event listenet
+    this._input.addEventListener("input", (e: InputEvent) => {
+      this._searchInstance.filterTagList(e, this._LIElements);
+    });
+
+    //if a filter is detected, reset this input value
+    window.addEventListener("filter", () => {
+      this._input.value = "";
+    });
   }
 }

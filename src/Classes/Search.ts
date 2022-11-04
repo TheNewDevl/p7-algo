@@ -1,55 +1,54 @@
-import { cleanString, escapeRegex } from "./utils/strings.js";
-import { RecipeInstance, TagsEnum } from "./types.js";
+import { cleanString, escapeRegex } from "../utils/strings.js";
+import { RecipeInstance, SelectedTags, TagsEnum } from "../utils/types.js";
 
 export class Search {
   private readonly _minlengthInput: number;
+  private readonly _unfilteredRecipes: RecipeInstance[];
+  private _filteredRecipes: RecipeInstance[] = [];
 
-  private readonly unfilteredRecipes: RecipeInstance[];
-  private filteredRecipes: RecipeInstance[] = [];
-
-  private isMainFiltered: boolean;
-  private isTagFiltered: boolean;
+  private _isMainFiltered: boolean;
+  private _isTagFiltered: boolean;
 
   private mainSearchValue: HTMLInputElement | null;
 
-  selectedTags = {
-    ingredients: [],
-    appliance: [],
-    utensils: [],
-  };
-
-  ingredients = [];
-  appliance = [];
-  utensils = [];
+  readonly selectedTags: SelectedTags;
+  private ingredients: string[];
+  private appliance: string[];
+  private utensils: string[];
 
   constructor(unfilteredRecipes: RecipeInstance[], minLengthInput: number) {
-    this.unfilteredRecipes = unfilteredRecipes;
     this._minlengthInput = minLengthInput;
-    this.isMainFiltered = false;
-    this.isTagFiltered = false;
-    this._init();
+    this._unfilteredRecipes = unfilteredRecipes;
+    this._isMainFiltered = false;
+    this._isTagFiltered = false;
+    this.selectedTags = {
+      ingredients: [],
+      appliance: [],
+      utensils: [],
+    };
+    this._handleAvailableTags();
   }
 
   private _displayAllRecipes() {
-    this.unfilteredRecipes.map((r) => (r.DOM.dataset.display = "shown"));
+    this._unfilteredRecipes.map((r) => (r.DOM.dataset.display = "shown"));
   }
 
+  /** Main search algorithme (from user input value) */
   mainSearch(currentTarget: HTMLInputElement) {
-    //Remove spaces
     const inputValue: string = cleanString(currentTarget.value);
     //true if input length > minLengthInput
     const isValidInput: boolean = inputValue.length >= this._minlengthInput;
 
     //handles cases where the length of the input is not valid
-    if (this.isMainFiltered && !isValidInput) {
-      if (this.isTagFiltered) {
-        this.isMainFiltered = false;
-        this.isTagFiltered = false;
-        this.runTagsSearch();
+    if (this._isMainFiltered && !isValidInput) {
+      if (this._isTagFiltered) {
+        this._isMainFiltered = false;
+        this._isTagFiltered = false;
+        this._runTagsSearch();
       } else {
         this.mainSearchValue = null;
         this._displayAllRecipes();
-        this.isMainFiltered = false;
+        this._isMainFiltered = false;
         this._handleAvailableTags();
         this._dispatchFilterEvent();
       }
@@ -72,46 +71,53 @@ export class Search {
       return isFounded;
     };
 
-    this.filteredRecipes = this[
-      this.isTagFiltered ? "filteredRecipes" : "unfilteredRecipes"
+    this._filteredRecipes = this[
+      this._isTagFiltered ? "_filteredRecipes" : "_unfilteredRecipes"
     ].filter((recipe) => filterHandler(recipe));
 
-    this.isMainFiltered = true;
+    this._isMainFiltered = true;
 
     this._handleAvailableTags();
     this._dispatchFilterEvent();
   }
 
+  /*******************************************************************
+   ************************** Tags Methods ***************************
+   ******************************************************************* */
+
+  /** Remove a tag from the search instance and run search algorithm */
   removeTag(el: HTMLElement) {
     const { type, value } = el.dataset;
+    //remove tad from selected tags
     this.selectedTags[type] = this.selectedTags[type].filter((li) => li.dataset.tagvalue !== value);
-    const event = new CustomEvent("addTag");
-    this.isTagFiltered = false;
 
-    if (
-      this.selectedTags.appliance.length === 0 &&
-      this.selectedTags.ingredients.length === 0 &&
-      this.selectedTags.utensils.length === 0
-    ) {
-      if (!this.isMainFiltered) {
-        this._displayAllRecipes();
-        this._handleAvailableTags();
-        this._dispatchFilterEvent();
-      } else {
-        this.mainSearch(this.mainSearchValue);
-      }
+    //let search start from initial recipes
+    this._isTagFiltered = false;
+
+    if (!this._isSelectedTagsEmpty()) {
+      this._runTagsSearch();
+    } else {
+      this._isMainFiltered
+        ? this.mainSearch(this.mainSearchValue)
+        : (this._displayAllRecipes(), this._handleAvailableTags(), this._dispatchFilterEvent());
     }
-
-    dispatchEvent(event);
   }
 
+  /** Add a tag to the search instance and run search algorithm */
   addTag(target: HTMLLIElement) {
     const tagType: string = target.dataset.tagtype;
     this.selectedTags[tagType].push(target);
-    const event = new CustomEvent("addTag");
-    dispatchEvent(event);
+    this._runTagsSearch();
   }
 
+  /** Run tag search for every selected tag*/
+  private _runTagsSearch() {
+    for (const [entry] of Object.entries(this.selectedTags)) {
+      this.selectedTags[entry].map((li) => this._searchByTag(li));
+    }
+  }
+
+  /** Tags search algorithm */
   private _searchByTag(target: HTMLInputElement) {
     const value: string = target.dataset.tagvalue;
     const tagType: string = target.dataset.tagtype;
@@ -149,17 +155,28 @@ export class Search {
       recipe.DOM.dataset.display = isFounded ? "shown" : "hidden";
       return isFounded;
     };
-    this.filteredRecipes = this[
-      this.isTagFiltered || this.isMainFiltered ? "filteredRecipes" : "unfilteredRecipes"
+    this._filteredRecipes = this[
+      this._isTagFiltered || this._isMainFiltered ? "_filteredRecipes" : "_unfilteredRecipes"
     ].filter((recipe) => filterHandler(recipe));
 
-    this.isTagFiltered = true;
+    this._isTagFiltered = true;
 
     this._handleAvailableTags();
     this._dispatchFilterEvent();
   }
 
-  /** While user type text, filter the list items using the givent value*/
+  /** Check if selected tags is empty or not */
+  private _isSelectedTagsEmpty(): boolean {
+    let emptyTags = [];
+    for (const [entry] of Object.entries(this.selectedTags)) {
+      if (this.selectedTags[entry].length === 0) {
+        emptyTags.push(0);
+      }
+    }
+    return emptyTags.length === Object.keys(this.selectedTags).length;
+  }
+
+  /** While user type text, filter the list items using the given value*/
   filterTagList(e: InputEvent, items: HTMLElement[]): void {
     const target = e.currentTarget as HTMLInputElement;
     const reg: RegExp = new RegExp(escapeRegex(target.value), "ig");
@@ -174,51 +191,30 @@ export class Search {
     this.appliance = [];
     this.utensils = [];
 
-    this[this.isTagFiltered || this.isMainFiltered ? "filteredRecipes" : "unfilteredRecipes"].map(
-      (r) => {
-        //appliance
-        console.log(this.selectedTags.appliance);
-        if (
-          !this.appliance.includes(r.obj.appliance) /* &&
-          !this.selectedTags.appliance.includes(r.obj.appliance)*/
-        ) {
-          this.appliance.push(r.obj.appliance);
-        }
-        //utensils
-        r.obj.utensils.map((u) => {
-          if (
-            !this.utensils.includes(cleanString(u)) /*&&
-            !this.selectedTags.appliance.includes(cleanString(u))*/
-          ) {
-            this.utensils.push(cleanString(u));
-          }
-        });
-        //ingredients
-        r.obj.ingredients.forEach((i) => {
-          if (
-            !this.ingredients.includes(cleanString(i.ingredient)) /*&&
-            !this.selectedTags.appliance.includes(cleanString(i.ingredient))*/
-          ) {
-            this.ingredients.push(cleanString(i.ingredient));
-          }
-        });
+    this[
+      this._isTagFiltered || this._isMainFiltered ? "_filteredRecipes" : "_unfilteredRecipes"
+    ].map((r) => {
+      //appliance
+      if (!this.appliance.includes(r.obj.appliance)) {
+        this.appliance.push(r.obj.appliance);
       }
-    );
-  }
-
-  private runTagsSearch() {
-    for (const [entry] of Object.entries(this.selectedTags)) {
-      this.selectedTags[entry].map((li) => this._searchByTag(li));
-    }
+      //utensils
+      r.obj.utensils.map((u) => {
+        if (!this.utensils.includes(cleanString(u))) {
+          this.utensils.push(cleanString(u));
+        }
+      });
+      //ingredients
+      r.obj.ingredients.forEach((i) => {
+        if (!this.ingredients.includes(cleanString(i.ingredient))) {
+          this.ingredients.push(cleanString(i.ingredient));
+        }
+      });
+    });
   }
 
   private _dispatchFilterEvent() {
-    const event = new CustomEvent("filter", { detail: this.filteredRecipes });
+    const event = new CustomEvent("filter");
     window.dispatchEvent(event);
-  }
-
-  private _init() {
-    this._handleAvailableTags();
-    window.addEventListener("addTag", this.runTagsSearch.bind(this));
   }
 }
