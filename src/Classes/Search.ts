@@ -177,11 +177,13 @@ export class Search {
   }
 
   /** While user type text, filter the list items using the given value*/
-  filterTagList(e: InputEvent, items: HTMLElement[]): void {
+  filterTagList(e: InputEvent, items: HTMLElement[]): HTMLElement[] {
     const target = e.currentTarget as HTMLInputElement;
     const reg: RegExp = new RegExp(escapeRegex(target.value), "ig");
-    items.map((li) => {
-      li.dataset.display = reg.test(li.dataset.tagvalue) ? "shown" : "hidden";
+    return items.filter((li) => {
+      let test = reg.test(li.dataset.tagvalue);
+      li.dataset.display = test ? "shown" : "hidden";
+      if (test) return li;
     });
   }
 

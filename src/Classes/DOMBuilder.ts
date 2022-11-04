@@ -88,4 +88,11 @@ export class DOMBuilder {
 
     return tagLi;
   }
+
+  buildError(text: string): HTMLElement {
+    const error = createEl("p", { class: "tag-error", style: "display: none" }, text);
+    this._appendEl(error);
+
+    return error;
+  }
 }

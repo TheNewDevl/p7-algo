@@ -17,6 +17,7 @@ export class Tags {
   private readonly _searchInstance: Search;
   private readonly _availableTagBuilder: DOMBuilder;
   private readonly _selectedTagsBuilder: DOMBuilder;
+  private _error: HTMLElement;
 
   constructor(
     type: TagsEnum,
@@ -34,6 +35,8 @@ export class Tags {
     this._searchInstance = searchInstance;
     this._availableTagBuilder = new DOMBuilder(this._UL);
     this._selectedTagsBuilder = new DOMBuilder(selectedTagContainer);
+
+    this._error = this._availableTagBuilder.buildError("Oups, aucun filtre disponible.");
 
     this._init();
   }
@@ -63,7 +66,8 @@ export class Tags {
 
   /** Generate available tag items from the search instance available tags list */
   updateAvailableTags() {
-    this._UL.innerHTML = "";
+    this._LIElements.forEach((li) => li.remove());
+
     this._searchInstance[this._type].map((i) => {
       const li = this._availableTagBuilder.buildTagSelectorLiItem(this._type, i);
       //store element to be able to filter
@@ -81,6 +85,8 @@ export class Tags {
         this._createSelectedTag(target);
       });
     });
+
+    this._handleError(this._searchInstance[this._type].length);
   }
 
   /** Close tag selector and remove event listeners */
@@ -125,6 +131,11 @@ export class Tags {
     document.body.addEventListener("click", this._closeTagSelectors.bind(this));
   }
 
+  /** Hide or display 'no tags" error depending on length */
+  private _handleError(length: number) {
+    this._error.style.display = length === 0 ? "block" : "none";
+  }
+
   private _init() {
     // Handle open and close detail element
     this._detailElement.addEventListener("click", (e) => {
@@ -137,9 +148,10 @@ export class Tags {
 
     this.updateAvailableTags();
 
-    //input filter event listenet
+    //input filter event listener
     this._input.addEventListener("input", (e: InputEvent) => {
-      this._searchInstance.filterTagList(e, this._LIElements);
+      const result = this._searchInstance.filterTagList(e, this._LIElements);
+      this._handleError(result.length);
     });
 
     //if a filter is detected, reset this input value
