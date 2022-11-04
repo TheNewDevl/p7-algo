@@ -47,7 +47,7 @@ export class TagSelector {
     const type: string = target.dataset.tagtype;
 
     const selectedTagDOM = this.selectedTagsBuilder.buildSelectedTagDOM(type, value);
-    selectedTagDOM.querySelector("img").addEventListener("click", () => {
+    selectedTagDOM.querySelector("button").addEventListener("click", () => {
       this.searchInstance.removeTag(selectedTagDOM);
       selectedTagDOM.remove();
     });

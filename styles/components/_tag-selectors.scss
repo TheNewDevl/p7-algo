@@ -30,13 +30,19 @@
     }
 
     & li {
-      color: #fff;
       width: 200px;
-      font-size: 18px;
-      font-weight: 400;
-      cursor: pointer;
       transition: transform 100ms ease-in-out;
       text-transform: capitalize;
+
+      & button {
+        border: none;
+        background-color: transparent;
+        color: #fff;
+        font-size: 18px;
+        font-weight: 400;
+        cursor: pointer;
+        text-transform: capitalize;
+      }
 
       &:hover, &:focus {
         transform: scale(1.2) translateX(20px);

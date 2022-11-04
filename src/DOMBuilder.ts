@@ -64,20 +64,24 @@ export class DOMBuilder {
 
   buildSelectedTagDOM(type: string, value: string) {
     const tag = createEl("div", { "data-type": type, "data-value": value });
+    const btn = createEl("button");
     const closeIcon = createEl("img", { alt: "remove tag", src: "../assets/close.svg" });
-    tag.append(value, closeIcon);
+    btn.append(closeIcon);
+    tag.append(value, btn);
     this._appendEl(tag);
 
     return tag;
   }
 
   buildTagSelectorLiItem(type: string, value: string) {
-    const tagLi = createEl(
-      "li",
-      { "data-tagType": type, "data-display": "shown", "data-tagValue": value },
-      value
-    );
+    const tagLi = createEl("li", {
+      "data-tagType": type,
+      "data-display": "shown",
+      "data-tagValue": value,
+    });
+    const btn = createEl("button", {}, value);
 
+    tagLi.append(btn);
     this._appendEl(tagLi);
 
     return tagLi;
