@@ -72,15 +72,15 @@ export class TagSelector {
   private _closeTagSelectors(e) {
     e.preventDefault();
     e.stopPropagation();
-    this._input.removeEventListener("click", this.stopPropagation);
-    this._input.removeEventListener("keydown", this.stopPropagation);
+    this._input.removeEventListener("click", this._stopPropagation);
+    this._input.removeEventListener("keydown", this._stopPropagation);
 
     this._detailElement.removeAttribute("open");
 
     document.body.removeEventListener("click", this._closeTagSelectors.bind(this));
   }
 
-  stopPropagation(e) {
+  private _stopPropagation(e) {
     e.stopPropagation();
     if (e.code === "Space") {
       const target = e.currentTarget as HTMLInputElement;
@@ -94,11 +94,18 @@ export class TagSelector {
     e.preventDefault();
     e.stopPropagation();
 
-    //prevent close collapse
-    this._input.addEventListener("click", this.stopPropagation);
-    this._input.addEventListener("keydown", this.stopPropagation);
+    //close other details elements
+    document.querySelectorAll("details").forEach((d) => {
+      d.querySelector("input").removeEventListener("click", this._stopPropagation);
+      d.querySelector("input").removeEventListener("keydown", this._stopPropagation);
+      d.removeAttribute("open");
+    });
 
     this._detailElement.toggleAttribute("open");
+
+    //prevent close collapse
+    this._input.addEventListener("click", this._stopPropagation);
+    this._input.addEventListener("keydown", this._stopPropagation);
 
     document.body.addEventListener("click", this._closeTagSelectors.bind(this));
   }
