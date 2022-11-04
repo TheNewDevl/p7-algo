@@ -57,13 +57,24 @@ export class TagSelector {
     return selectedTagDOM;
   }
 
+  /** Generate available tag items from the search instance available tags list */
   updateAvailableTags() {
     this._UL.innerHTML = "";
-    this.searchInstance[this._type].map((i) => {
-      const li = this.domBuilder.buildTagSelectorLiItem(this._type, i);
+    this._searchInstance[this._type].map((i) => {
+      const li = this._availableTagBuilder.buildTagSelectorLiItem(this._type, i);
+      //store element to be able to filter
       this._LIElements.push(li);
-      li.addEventListener("click", ({ currentTarget }) => {
-        this.createSelectedTag(currentTarget as HTMLLIElement);
+      //add create tag event listener
+      li.addEventListener("click", (e) => {
+        //if already selected, return
+        const target = e.currentTarget as HTMLLIElement;
+        const value = target.dataset.tagvalue;
+        const selectedTagsFilterLength = this._searchInstance.selectedTags[this._type].filter(
+          (i) => value === i.dataset.tagvalue
+        ).length;
+        if (selectedTagsFilterLength > 0) return;
+
+        this._createSelectedTag(target);
       });
     });
   }
