@@ -1,4 +1,4 @@
-import { cleanString } from "./utils/domFns.js";
+import { cleanString, escapeRegex } from "./utils/strings.js";
 import { RecipeInstance, TagsEnum } from "./types.js";
 
 export class Search {
@@ -58,7 +58,7 @@ export class Search {
 
     this.mainSearchValue = currentTarget;
     //create an insensitive regex to test values
-    const reg = new RegExp(inputValue, "i");
+    const reg = new RegExp(escapeRegex(inputValue), "i");
 
     //filter conditions and handle display while filtering
     const filterHandler = (recipe: RecipeInstance) => {
@@ -117,7 +117,7 @@ export class Search {
     const tagType: string = target.dataset.tagtype;
 
     //create an insensitive regex to test values
-    const reg = new RegExp(value, "i");
+    const reg = new RegExp(escapeRegex(value), "i");
 
     //handle filter depending on tag type
     const filterHandler = (recipe: RecipeInstance) => {
@@ -162,7 +162,7 @@ export class Search {
   /** While user type text, filter the list items using the givent value*/
   filterTagList(e: InputEvent, items: HTMLElement[]): void {
     const target = e.currentTarget as HTMLInputElement;
-    const reg: RegExp = new RegExp(target.value, "i");
+    const reg: RegExp = new RegExp(escapeRegex(target.value), "ig");
     items.map((li) => {
       li.dataset.display = reg.test(li.dataset.tagvalue) ? "shown" : "hidden";
     });
@@ -177,18 +177,28 @@ export class Search {
     this[this.isTagFiltered || this.isMainFiltered ? "filteredRecipes" : "unfilteredRecipes"].map(
       (r) => {
         //appliance
-        if (!this.appliance.includes(r.obj.appliance)) {
+        console.log(this.selectedTags.appliance);
+        if (
+          !this.appliance.includes(r.obj.appliance) /* &&
+          !this.selectedTags.appliance.includes(r.obj.appliance)*/
+        ) {
           this.appliance.push(r.obj.appliance);
         }
         //utensils
         r.obj.utensils.map((u) => {
-          if (!this.utensils.includes(cleanString(u))) {
+          if (
+            !this.utensils.includes(cleanString(u)) /*&&
+            !this.selectedTags.appliance.includes(cleanString(u))*/
+          ) {
             this.utensils.push(cleanString(u));
           }
         });
         //ingredients
         r.obj.ingredients.forEach((i) => {
-          if (!this.ingredients.includes(cleanString(i.ingredient))) {
+          if (
+            !this.ingredients.includes(cleanString(i.ingredient)) /*&&
+            !this.selectedTags.appliance.includes(cleanString(i.ingredient))*/
+          ) {
             this.ingredients.push(cleanString(i.ingredient));
           }
         });
