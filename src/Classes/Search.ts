@@ -53,21 +53,35 @@ export class Search {
     //create an insensitive regex to test values
     const reg = new RegExp(escapeRegex(inputValue), "i");
 
-    //filter conditions and handle display while filtering
-    const filterHandler = (recipe: RecipeInstance) => {
-      //test name first & separately will return quickly and give better performances
-      const isFounded =
-        reg.test(recipe.obj.name) ||
-        reg.test(recipe.obj.description) ||
-        recipe.obj.ingredients.find((i) => reg.test(i.ingredient));
-      //handle display
-      recipe.DOM.dataset.display = isFounded ? "shown" : "hidden";
-      return isFounded;
-    };
+    const listToFilter = this[this._isTagFiltered ? "_filteredRecipes" : "_unfilteredRecipes"];
 
-    this._filteredRecipes = this[
-      this._isTagFiltered ? "_filteredRecipes" : "_unfilteredRecipes"
-    ].filter((recipe) => filterHandler(recipe));
+    //filter conditions and handle display while filtering
+    for (let i = 0; i < listToFilter.length; i++) {
+      const matchName = reg.test(listToFilter[i].obj.name);
+      const matchDescription = reg.test(listToFilter[i].obj.description);
+      let matchIngredient = false;
+
+      for (let x = 0; x < listToFilter[i].obj.ingredients.length; x++) {
+        if (reg.test(listToFilter[i].obj.ingredients[x].ingredient)) {
+          matchIngredient = true;
+          break;
+        }
+      }
+
+      if (matchName || matchDescription || matchIngredient) {
+        const index = this._filteredRecipes.indexOf(listToFilter[i]);
+        listToFilter[i].DOM.dataset.display = "shown";
+        if (index === -1) {
+          this._filteredRecipes.push(listToFilter[i]);
+        }
+      } else {
+        const index = this._filteredRecipes.indexOf(listToFilter[i]);
+        listToFilter[i].DOM.dataset.display = "hidden";
+        if (index > -1) {
+          this._filteredRecipes.splice(index, 1);
+        }
+      }
+    }
 
     this._isMainFiltered = true;
 
