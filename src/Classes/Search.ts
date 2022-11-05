@@ -9,7 +9,7 @@ export class Search {
   private _isMainFiltered: boolean;
   private _isTagFiltered: boolean;
 
-  private mainSearchValue: HTMLInputElement | null;
+  private _mainSearchValue: HTMLInputElement | null;
 
   readonly selectedTags: SelectedTags;
   private ingredients: string[];
@@ -29,10 +29,6 @@ export class Search {
     this._handleAvailableTags();
   }
 
-  private _displayAllRecipes() {
-    this._unfilteredRecipes.map((r) => (r.DOM.dataset.display = "shown"));
-  }
-
   /** Main search algorithme (from user input value) */
   mainSearch(currentTarget: HTMLInputElement) {
     const inputValue: string = cleanString(currentTarget.value);
@@ -46,16 +42,14 @@ export class Search {
         this._isTagFiltered = false;
         this._runTagsSearch();
       } else {
-        this.mainSearchValue = null;
-        this._displayAllRecipes();
-        this._isMainFiltered = false;
-        this._handleAvailableTags();
-        this._dispatchFilterEvent();
+        this._reset();
       }
       return;
     } else if (!isValidInput) return;
 
-    this.mainSearchValue = currentTarget;
+    //store input value
+    this._mainSearchValue = currentTarget;
+
     //create an insensitive regex to test values
     const reg = new RegExp(escapeRegex(inputValue), "i");
 
@@ -97,9 +91,7 @@ export class Search {
     if (!this._isSelectedTagsEmpty()) {
       this._runTagsSearch();
     } else {
-      this._isMainFiltered
-        ? this.mainSearch(this.mainSearchValue)
-        : (this._displayAllRecipes(), this._handleAvailableTags(), this._dispatchFilterEvent());
+      this._isMainFiltered ? this.mainSearch(this._mainSearchValue) : this._reset();
     }
   }
 
@@ -127,34 +119,17 @@ export class Search {
 
     //handle filter depending on tag type
     const filterHandler = (recipe: RecipeInstance) => {
-      let isFounded: boolean = false;
-
-      if (tagType === TagsEnum.app) {
-        isFounded = reg.test(recipe.obj.appliance);
-      } else if (tagType === TagsEnum.ut) {
-        for (const utensil of recipe.obj.utensils) {
-          if (reg.test(utensil)) {
-            isFounded = true;
-            break;
-          }
-          for (const ingredient of recipe.obj.ingredients) {
-            if (reg.test(ingredient.unit)) {
-              isFounded = true;
-              break;
-            }
-          }
-        }
-      } else if (tagType === TagsEnum.ing) {
-        for (const ingredient of recipe.obj.ingredients) {
-          if (reg.test(ingredient.ingredient)) {
-            isFounded = true;
-            break;
-          }
-        }
-      }
+      //let isFounded: boolean = false;
+      const isFounded =
+        tagType === TagsEnum.app
+          ? reg.test(recipe.obj.appliance)
+          : tagType === TagsEnum.ut
+          ? recipe.obj.utensils.find((u) => reg.test(u))
+          : recipe.obj.ingredients.find((i) => reg.test(i.ingredient));
       recipe.DOM.dataset.display = isFounded ? "shown" : "hidden";
       return isFounded;
     };
+
     this._filteredRecipes = this[
       this._isTagFiltered || this._isMainFiltered ? "_filteredRecipes" : "_unfilteredRecipes"
     ].filter((recipe) => filterHandler(recipe));
@@ -164,6 +139,9 @@ export class Search {
     this._handleAvailableTags();
     this._dispatchFilterEvent();
   }
+
+  /*******************************************************************
+   ******************************************************************* */
 
   /** Check if selected tags is empty or not */
   private _isSelectedTagsEmpty(): boolean {
@@ -220,5 +198,17 @@ export class Search {
     const length = this[filtered ? "_filteredRecipes" : "_unfilteredRecipes"].length;
     const event = new CustomEvent("filter", { detail: length });
     window.dispatchEvent(event);
+  }
+
+  /** Reset search to the initial state and values */
+  private _reset() {
+    this._unfilteredRecipes.map((r) => (r.DOM.dataset.display = "shown"));
+    this._filteredRecipes = [];
+    this._mainSearchValue = null;
+    this._isTagFiltered = false;
+    this._isMainFiltered = false;
+
+    this._handleAvailableTags();
+    this._dispatchFilterEvent();
   }
 }
