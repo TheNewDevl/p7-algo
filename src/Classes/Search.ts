@@ -53,35 +53,39 @@ export class Search {
     //create an insensitive regex to test values
     const reg = new RegExp(escapeRegex(inputValue), "i");
 
-    const listToFilter = this[this._isTagFiltered ? "_filteredRecipes" : "_unfilteredRecipes"];
+    const filterHandler = () => {
+      const listToFilter = this[this._isTagFiltered ? "_filteredRecipes" : "_unfilteredRecipes"];
 
-    //filter conditions and handle display while filtering
-    for (let i = 0; i < listToFilter.length; i++) {
-      const matchName = reg.test(listToFilter[i].obj.name);
-      const matchDescription = reg.test(listToFilter[i].obj.description);
-      let matchIngredient = false;
+      //filter conditions and handle display while filtering
+      for (let i = 0; i < listToFilter.length; i++) {
+        const matchName = reg.test(listToFilter[i].obj.name);
+        const matchDescription = reg.test(listToFilter[i].obj.description);
+        let matchIngredient = false;
 
-      for (let x = 0; x < listToFilter[i].obj.ingredients.length; x++) {
-        if (reg.test(listToFilter[i].obj.ingredients[x].ingredient)) {
-          matchIngredient = true;
-          break;
+        for (let x = 0; x < listToFilter[i].obj.ingredients.length; x++) {
+          if (reg.test(listToFilter[i].obj.ingredients[x].ingredient)) {
+            matchIngredient = true;
+            break;
+          }
+        }
+
+        if (matchName || matchDescription || matchIngredient) {
+          const index = this._filteredRecipes.indexOf(listToFilter[i]);
+          listToFilter[i].DOM.dataset.display = "shown";
+          if (index === -1) {
+            this._filteredRecipes.push(listToFilter[i]);
+          }
+        } else {
+          const index = this._filteredRecipes.indexOf(listToFilter[i]);
+          listToFilter[i].DOM.dataset.display = "hidden";
+          if (index > -1) {
+            this._filteredRecipes.splice(index, 1);
+          }
         }
       }
+    };
 
-      if (matchName || matchDescription || matchIngredient) {
-        const index = this._filteredRecipes.indexOf(listToFilter[i]);
-        listToFilter[i].DOM.dataset.display = "shown";
-        if (index === -1) {
-          this._filteredRecipes.push(listToFilter[i]);
-        }
-      } else {
-        const index = this._filteredRecipes.indexOf(listToFilter[i]);
-        listToFilter[i].DOM.dataset.display = "hidden";
-        if (index > -1) {
-          this._filteredRecipes.splice(index, 1);
-        }
-      }
-    }
+    filterHandler();
 
     this._isMainFiltered = true;
 
