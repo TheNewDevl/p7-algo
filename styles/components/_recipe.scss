@@ -88,7 +88,7 @@
       &--right {
         display: -webkit-box;
         font-weight: 400;
-
+        max-height: 84px;
         overflow: hidden;
         text-overflow: ellipsis;
         -webkit-line-clamp: 6;
