@@ -51,14 +51,13 @@ these commands.
 1. Open you CLI
 2. Run ``npm install``
 3.
-    - ``npm run dev`` run TS in watch mode OR
-    - ``npm run tscompil`` compil TS OR
-    - ``npm run serve`` compil TS and run a local server. Then you can open your browser with the
+    - ``npm run build`` Build Typescript and Sass
+    - ``npm run build:serve`` Build Typescript, Sass and run a local server. Then you can open your browser with the
       given url
 
 ### Links
 
-You can also consult the hosted website : [Live URL](#)
+You can also consult the hosted website : [Live URL](https://p7-algo.vercel.app)
 
 Source code available [Here](https://github.com/TheNewDevl/p7-algo)
 
