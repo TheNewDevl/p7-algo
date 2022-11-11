@@ -56,13 +56,13 @@ export class Search {
     //filter conditions and handle display while filtering
     const filterHandler = (recipe: RecipeInstance) => {
       //test name first & separately will return quickly and give better performances
-      const isFounded =
+      const isFound =
         reg.test(recipe.obj.name) ||
         reg.test(recipe.obj.description) ||
         recipe.obj.ingredients.find((i) => reg.test(i.ingredient));
       //handle display
-      recipe.DOM.dataset.display = isFounded ? "shown" : "hidden";
-      return isFounded;
+      recipe.DOM.dataset.display = isFound ? "shown" : "hidden";
+      return isFound;
     };
 
     this._filteredRecipes = this[
@@ -119,15 +119,15 @@ export class Search {
 
     //handle filter depending on tag type
     const filterHandler = (recipe: RecipeInstance) => {
-      //let isFounded: boolean = false;
-      const isFounded =
+      //let isFound: boolean = false;
+      const isFound =
         tagType === TagsEnum.app
           ? reg.test(recipe.obj.appliance)
           : tagType === TagsEnum.ut
           ? recipe.obj.utensils.find((u) => reg.test(u))
           : recipe.obj.ingredients.find((i) => reg.test(i.ingredient));
-      recipe.DOM.dataset.display = isFounded ? "shown" : "hidden";
-      return isFounded;
+      recipe.DOM.dataset.display = isFound ? "shown" : "hidden";
+      return isFound;
     };
 
     this._filteredRecipes = this[

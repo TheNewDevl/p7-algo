@@ -8,7 +8,7 @@ export const cleanString = (string: string) => {
 };
 
 /** Replace some characters in the given string */
-export const escapeRegex = (string) => {
+export const escapeRegex = (string: string): string => {
   return string
     .replace(/[()]/g, "\\$&")
     .replace(/ /g, "('| |-)")
