@@ -5,9 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "npx tsc --watch",
-    "tscompil": "npx tsc",
-    "serve": "npx tsc; http-server"
+    "sass:watch": "sass --watch ./styles/main.scss:./styles/main.css",
+    "ts:watch": "npx tsc --watch",
+    "build": "sass ./styles/main.scss:./styles/main.css --style compressed; npx tsc --build",
+    "build:serve": "sass ./styles/main.scss:./styles/main.css --style compressed; npx tsc; http-server"
   },
   "repository": {
     "type": "git",
@@ -23,10 +24,10 @@
     "@typescript-eslint/eslint-plugin": "^5.41.0",
     "@typescript-eslint/parser": "^5.41.0",
     "eslint": "^8.26.0",
-    "sass": "^1.55.0",
     "typescript": "^4.8.4"
   },
   "dependencies": {
-    "http-server": "^14.1.1"
+    "http-server": "^14.1.1",
+    "sass": "^1.56.1"
   }
 }
