@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "npx tsc --watch"
+    "dev": "npx tsc --watch",
+    "tscompil": "npx tsc",
+    "serve": "npx tsc; http-server"
   },
   "repository": {
     "type": "git",
@@ -23,5 +25,8 @@
     "eslint": "^8.26.0",
     "sass": "^1.55.0",
     "typescript": "^4.8.4"
+  },
+  "dependencies": {
+    "http-server": "^14.1.1"
   }
 }
