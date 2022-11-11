@@ -59,7 +59,7 @@ these commands.
 
 ### Links
 
-[Live URL: This deployment was made with the of code of this branch](https://p7-algo-git-nativeloops-thenewdevl.vercel.app)
+[Live URL: This deployment was made with the of code of this branch](https://p7-algo-native-loops.vercel.app)
 
 Source code available [Here](https://github.com/TheNewDevl/p7-algo)
 
