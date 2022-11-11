@@ -137,15 +137,15 @@ export class Search {
 
     //handle filter depending on tag type
     const filterHandler = (recipe: RecipeInstance) => {
-      //let isFounded: boolean = false;
-      const isFounded =
+      //let isFound: boolean = false;
+      const isFound =
         tagType === TagsEnum.app
           ? reg.test(recipe.obj.appliance)
           : tagType === TagsEnum.ut
           ? recipe.obj.utensils.find((u) => reg.test(u))
           : recipe.obj.ingredients.find((i) => reg.test(i.ingredient));
-      recipe.DOM.dataset.display = isFounded ? "shown" : "hidden";
-      return isFounded;
+      recipe.DOM.dataset.display = isFound ? "shown" : "hidden";
+      return isFound;
     };
 
     this._filteredRecipes = this[
