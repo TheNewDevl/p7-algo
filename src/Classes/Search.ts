@@ -89,6 +89,7 @@ export class Search {
     this._isTagFiltered = false;
 
     if (!this._isSelectedTagsEmpty()) {
+      this._isMainFiltered && this.mainSearch(this._mainSearchValue);
       this._runTagsSearch();
     } else {
       this._isMainFiltered ? this.mainSearch(this._mainSearchValue) : this._reset();
